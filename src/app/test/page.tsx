@@ -1,11 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
-
+import Latex from 'react-latex-next';
 export default function TestPage() {
+  const fruction1 = `$$a^2+b^2=c^2$$`
   const questions = [
     {
       id: 1,
-      question: 'What is 5 + 3?',
+      question: `What is 1=2?`,
       options: ['6', '7', '8', '9'],
       correct: '8',
     },
@@ -31,7 +32,7 @@ export default function TestPage() {
 
   const [answers, setAnswers] = useState({});
   const [score, setScore] = useState(null);
-  const [timeLeft, setTimeLeft] = useState(20 * 60); // 20 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(20 * 60); 
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Countdown timer
@@ -86,6 +87,7 @@ export default function TestPage() {
         >
           {formatTime(timeLeft)}
         </div>
+       
       </div>
 
       <div className="w-full max-w-2xl bg-white p-6 rounded-2xl shadow-[0_5px_15px_rgba(0,0,0,0.35)]">
@@ -128,6 +130,12 @@ export default function TestPage() {
           </div>
         )}
       </div>
+        <div>
+          <Latex>
+            {fruction1}
+          </Latex>
+          {fruction1}
+         </div>
     </div>
   );
 }

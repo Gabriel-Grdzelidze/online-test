@@ -13,14 +13,21 @@
     "@as-integrations/next": "^4.0.0",
     "@heroicons/react": "^2.2.0",
     "@prisma/client": "^6.17.1",
+    "@types/react-latex": "^2.0.3",
+    "better-react-mathjax": "^2.3.0",
     "graphql": "^16.11.0",
     "graphql-client": "^2.0.1",
     "graphql-tag": "^2.12.6",
+    "katex": "^0.16.11",
+    "latex": "^0.0.1",
+    "mathquill": "^0.10.1-a",
     "mongodb": "^6.20.0",
     "next": "15.5.6",
     "prisma": "^6.17.1",
+    "prop-types": "^15.8.1",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "react-latex": "^2.0.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
