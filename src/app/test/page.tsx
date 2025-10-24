@@ -1,38 +1,40 @@
-'use client';
-import { useState, useEffect } from 'react';
-import Latex from 'react-latex-next';
+"use client";
+import { useState, useEffect } from "react";
+import Latex from "react-latex";
+import "katex/dist/katex.min.css";
+
 export default function TestPage() {
-  const fruction1 = `$$a^2+b^2=c^2$$`
+  const fruction1 = `$$\\frac{1}{2}$$`;
   const questions = [
     {
       id: 1,
-      question: `What is 1=2?`,
-      options: ['6', '7', '8', '9'],
-      correct: '8',
+      question: `What is $$\\frac{1}{2}$$?`,
+      options: ["6", "7", "8", "9"],
+      correct: "8",
     },
     {
       id: 2,
-      question: 'What is 12 × 2?',
-      options: ['22', '24', '26', '28'],
-      correct: '24',
+      question: "What is 12 × 2?",
+      options: ["22", "24", "26", "28"],
+      correct: "24",
     },
     {
       id: 3,
-      question: 'What is the square root of 49?',
-      options: ['6', '7', '8', '9'],
-      correct: '7',
+      question: "What is the square root of 49?",
+      options: ["6", "7", "8", "9"],
+      correct: "7",
     },
     {
       id: 4,
-      question: 'What is 15 ÷ 3?',
-      options: ['4', '5', '6', '7'],
-      correct: '5',
+      question: "What is 15 ÷ 3?",
+      options: ["4", "5", "6", "7"],
+      correct: "5",
     },
   ];
 
   const [answers, setAnswers] = useState({});
   const [score, setScore] = useState(null);
-  const [timeLeft, setTimeLeft] = useState(20 * 60); 
+  const [timeLeft, setTimeLeft] = useState(20 * 60);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Countdown timer
@@ -56,7 +58,7 @@ export default function TestPage() {
   const formatTime = (seconds) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
   const handleSelect = (id, answer) => {
@@ -81,19 +83,18 @@ export default function TestPage() {
         <div
           className={`text-lg font-semibold px-4 py-2 rounded-lg ${
             timeLeft <= 60
-              ? 'bg-red-500 text-white'
-              : 'bg-blue-100 text-blue-700'
+              ? "bg-red-500 text-white"
+              : "bg-blue-100 text-blue-700"
           }`}
         >
           {formatTime(timeLeft)}
         </div>
-       
       </div>
 
       <div className="w-full max-w-2xl bg-white p-6 rounded-2xl shadow-[0_5px_15px_rgba(0,0,0,0.35)]">
         {questions.map((q) => (
           <div key={q.id} className="mb-6">
-            <h2 className="text-lg font-semibold mb-2">{q.question}</h2>
+            <h2 className="text-lg font-semibold mb-2"><Latex>{q.question}</Latex></h2>
             <div className="grid grid-cols-2 gap-2">
               {q.options.map((option) => (
                 <button
@@ -103,10 +104,10 @@ export default function TestPage() {
                   className={`p-3 rounded-lg border text-left transition-all
                     ${
                       answers[q.id] === option
-                        ? 'bg-blue-500 text-white border-blue-500'
-                        : 'bg-gray-100 hover:bg-blue-100 border-gray-300'
+                        ? "bg-blue-500 text-white border-blue-500"
+                        : "bg-gray-100 hover:bg-blue-100 border-gray-300"
                     } 
-                    ${isSubmitted ? 'opacity-70 cursor-not-allowed' : ''}`}
+                    ${isSubmitted ? "opacity-70 cursor-not-allowed" : ""}`}
                 >
                   {option}
                 </button>
@@ -130,12 +131,7 @@ export default function TestPage() {
           </div>
         )}
       </div>
-        <div>
-          <Latex>
-            {fruction1}
-          </Latex>
-          {fruction1}
-         </div>
+      <div></div>
     </div>
   );
 }
