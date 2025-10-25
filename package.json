@@ -12,7 +12,7 @@
     "@apollo/server": "^5.0.0",
     "@as-integrations/next": "^4.0.0",
     "@heroicons/react": "^2.2.0",
-    "@prisma/client": "^6.17.1",
+    "@prisma/client": "^6.18.0",
     "@types/react-latex": "^2.0.3",
     "better-react-mathjax": "^2.3.0",
     "framer-motion": "^12.23.24",

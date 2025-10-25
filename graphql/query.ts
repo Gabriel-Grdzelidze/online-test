@@ -9,3 +9,14 @@ export const GET_STUDENTS = gql`
     }
   }
 `;
+
+export const GET_QUESTIONS=gql`
+  query GetStudents{
+    question{
+      id
+      question
+      options
+      correct
+    }
+  }
+`

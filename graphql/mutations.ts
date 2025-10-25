@@ -9,3 +9,14 @@ export const CREATE_STUDENT = gql`
     }
     }
 `;
+
+export const CREATE_QUESTION = gql`
+  mutation CreateStudent($question: String!, $options: [String!]!,$correct: String!) {
+    createStudent(question: $question, options: $options, correct: $correct ) {
+        id
+        options
+        question
+        correct
+    }
+    }
+`;

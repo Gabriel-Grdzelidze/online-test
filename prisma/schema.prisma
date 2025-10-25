@@ -12,3 +12,11 @@ model Student{
   email     String   @unique
   password  String
 }
+
+model Question{
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  question String
+  options String[]
+  correct String
+}
+

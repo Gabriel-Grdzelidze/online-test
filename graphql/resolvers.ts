@@ -6,6 +6,9 @@ export const resolvers = {
     students: async (_parent: any, _args: any, context: Context) => {
       return context.prisma.student.findMany();
     },
+     question: async (_parent: any, _args: any, context: Context) => {
+      return context.prisma.question.findMany();
+    },
   },
   Mutation: {
     createStudent: async (_parent: any, args: { password: string; email: string }, context: Context) => {
@@ -14,6 +17,13 @@ export const resolvers = {
         data: {
           password,
           email,
+        },
+      });
+    }
+    createQuestion: async (_parent: any, args: { question: string; email: string }, context: Context) => {
+      const { question, email } = args;
+      return context.prisma.question.create({
+        
         },
       });
     },
