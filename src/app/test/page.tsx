@@ -1,41 +1,18 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useQuery } from "@apollo/client/react";
 import Latex from "react-latex";
 import "katex/dist/katex.min.css";
+import { GET_QUESTIONS } from "../../../graphql/query";
 
 export default function TestPage() {
-  const fruction1 = `$$\\frac{1}{2}$$`;
-  const questions = [
-    {
-      id: 1,
-      question: `What is $$\\frac{1}{2}$$?`,
-      options: ["6", "7", "8", "9"],
-      correct: "8",
-    },
-    {
-      id: 2,
-      question: "What is 12 × 2?",
-      options: ["22", "24", "26", "28"],
-      correct: "24",
-    },
-    {
-      id: 3,
-      question: "What is the square root of 49?",
-      options: ["6", "7", "8", "9"],
-      correct: "7",
-    },
-    {
-      id: 4,
-      question: "What is 15 ÷ 3?",
-      options: ["4", "5", "6", "7"],
-      correct: "5",
-    },
-  ];
-
+  const { data, loading, error } = useQuery(GET_QUESTIONS);
   const [answers, setAnswers] = useState({});
-  const [score, setScore] = useState(null);
+  const [score, setScore] = useState<number | null>(null);
   const [timeLeft, setTimeLeft] = useState(20 * 60);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const questions = data?.question || [];
 
   // Countdown timer
   useEffect(() => {
@@ -45,7 +22,7 @@ export default function TestPage() {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          handleSubmit(); // auto-submit when time is up
+          handleSubmit(); 
           return 0;
         }
         return prev - 1;
@@ -55,13 +32,13 @@ export default function TestPage() {
     return () => clearInterval(timer);
   }, [isSubmitted]);
 
-  const formatTime = (seconds) => {
+  const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
-  const handleSelect = (id, answer) => {
+  const handleSelect = (id: string, answer: string) => {
     if (!isSubmitted) {
       setAnswers((prev) => ({ ...prev, [id]: answer }));
     }
@@ -69,12 +46,15 @@ export default function TestPage() {
 
   const handleSubmit = () => {
     let points = 0;
-    questions.forEach((q) => {
+    questions.forEach((q: any) => {
       if (answers[q.id] === q.correct) points++;
     });
     setScore(points);
     setIsSubmitted(true);
   };
+
+  if (loading) return <p className="text-center mt-10">Loading questions...</p>;
+  if (error) return <p className="text-center mt-10 text-red-600">Error loading questions.</p>;
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center p-6">
@@ -92,11 +72,13 @@ export default function TestPage() {
       </div>
 
       <div className="w-full max-w-2xl bg-white p-6 rounded-2xl shadow-[0_5px_15px_rgba(0,0,0,0.35)]">
-        {questions.map((q) => (
+        {questions.map((q: any) => (
           <div key={q.id} className="mb-6">
-            <h2 className="text-lg font-semibold mb-2"><Latex>{q.question}</Latex></h2>
+            <h2 className="text-lg font-semibold mb-2">
+              <Latex>{q.question}</Latex>
+            </h2>
             <div className="grid grid-cols-2 gap-2">
-              {q.options.map((option) => (
+              {q.options.map((option: string) => (
                 <button
                   key={option}
                   onClick={() => handleSelect(q.id, option)}
@@ -109,7 +91,7 @@ export default function TestPage() {
                     } 
                     ${isSubmitted ? "opacity-70 cursor-not-allowed" : ""}`}
                 >
-                  {option}
+               <Latex>{option}</Latex>
                 </button>
               ))}
             </div>
@@ -131,7 +113,6 @@ export default function TestPage() {
           </div>
         )}
       </div>
-      <div></div>
     </div>
   );
 }

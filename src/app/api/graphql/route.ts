@@ -1,31 +1,23 @@
 import { ApolloServer } from "@apollo/server";
 import { startServerAndCreateNextHandler } from "@as-integrations/next";
-import { resolvers } from "../../../../graphql/resolvers";
-import { typeDefs } from "../../../../graphql/typedefs";
 import { PrismaClient } from "@prisma/client";
-import createPrismaClient from "../../../../prisma/db";
+import { typeDefs } from "../../../../graphql/typedefs";
+import { resolvers } from "../../../../graphql/resolvers";
 
+export const prisma = new PrismaClient();
 
-
-
-
-export type Context = {
+export interface Context {
   prisma: PrismaClient;
-};
+}
 
 const apolloServer = new ApolloServer<Context>({
-  resolvers,
   typeDefs,
-  introspection: true, 
- 
+  resolvers,
+  introspection: true, // ✅ Enables schema introspection for Sandbox/Playground
 });
 
 const handler = startServerAndCreateNextHandler(apolloServer, {
-  context: async (req, res) => ({ 
-    req, 
-    res, 
-    prisma: createPrismaClient(), 
-  }),
+  context: async () => ({ prisma }),
 });
 
 export { handler as GET, handler as POST };

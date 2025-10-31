@@ -5,10 +5,10 @@ export const typeDefs = `#graphql
     email: String!
   }
 
-  type Question{
+  type Question {
     id: ID!
     question: String!
-    options: String[]!
+    options: [String!]!
     correct: String!
   }
 
@@ -19,6 +19,6 @@ export const typeDefs = `#graphql
 
   type Mutation {
     createStudent(password: String!, email: String!): Student!
-    createQuestion(question: String!,option: [String!]!,correct: String!): Question!
+    createQuestion(question: String!, options: [String!]!, correct: String!): Question!
   }
 `;
