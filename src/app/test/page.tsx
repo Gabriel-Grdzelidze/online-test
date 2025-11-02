@@ -1,6 +1,7 @@
-"use client";
+'use client';
 import { useState, useEffect } from "react";
 import { useQuery } from "@apollo/client/react";
+import { useRouter } from "next/navigation";
 import Latex from "react-latex";
 import "katex/dist/katex.min.css";
 import { GET_QUESTIONS } from "../../../graphql/query";
@@ -9,12 +10,13 @@ export default function TestPage() {
   const { data, loading, error } = useQuery(GET_QUESTIONS);
   const [answers, setAnswers] = useState({});
   const [score, setScore] = useState<number | null>(null);
-  const [timeLeft, setTimeLeft] = useState(20 * 60);
+  const [timeLeft, setTimeLeft] = useState(3 * 60); // 3 minutes
   const [isSubmitted, setIsSubmitted] = useState(false);
 
+  const router = useRouter();
   const questions = data?.question || [];
 
-  // Countdown timer
+  // Countdown timer & auto-submit
   useEffect(() => {
     if (isSubmitted) return;
 
@@ -22,7 +24,7 @@ export default function TestPage() {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          handleSubmit(); 
+          handleSubmit();
           return 0;
         }
         return prev - 1;
@@ -31,6 +33,30 @@ export default function TestPage() {
 
     return () => clearInterval(timer);
   }, [isSubmitted]);
+
+  // Warn user on refresh/close & SPA navigation
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!isSubmitted) {
+        e.preventDefault();
+        e.returnValue = ""; // Generic warning
+      }
+    };
+
+    const handleRouteChange = (url: string) => {
+      if (!isSubmitted && !confirm("You have an ongoing test. Are you sure you want to leave?")) {
+        throw "Route change aborted"; // prevents SPA navigation
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload ,{capture:true});
+    const unlisten = router.events?.on?.("routeChangeStart", handleRouteChange);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      unlisten?.();
+    };
+  }, [isSubmitted, router]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -45,6 +71,7 @@ export default function TestPage() {
   };
 
   const handleSubmit = () => {
+    if (isSubmitted) return;
     let points = 0;
     questions.forEach((q: any) => {
       if (answers[q.id] === q.correct) points++;
@@ -62,9 +89,7 @@ export default function TestPage() {
         <h1 className="text-3xl font-bold">Math Test</h1>
         <div
           className={`text-lg font-semibold px-4 py-2 rounded-lg ${
-            timeLeft <= 60
-              ? "bg-red-500 text-white"
-              : "bg-blue-100 text-blue-700"
+            timeLeft <= 30 ? "bg-red-500 text-white" : "bg-blue-100 text-blue-700"
           }`}
         >
           {formatTime(timeLeft)}
@@ -74,26 +99,32 @@ export default function TestPage() {
       <div className="w-full max-w-2xl bg-white p-6 rounded-2xl shadow-[0_5px_15px_rgba(0,0,0,0.35)]">
         {questions.map((q: any) => (
           <div key={q.id} className="mb-6">
-            <h2 className="text-lg font-semibold mb-2">
-              <Latex>{q.question}</Latex>
-            </h2>
+            <h2 className="text-lg font-semibold mb-2"><Latex>{q.question}</Latex></h2>
             <div className="grid grid-cols-2 gap-2">
-              {q.options.map((option: string) => (
-                <button
-                  key={option}
-                  onClick={() => handleSelect(q.id, option)}
-                  disabled={isSubmitted}
-                  className={`p-3 rounded-lg border text-left transition-all
-                    ${
-                      answers[q.id] === option
-                        ? "bg-blue-500 text-white border-blue-500"
-                        : "bg-gray-100 hover:bg-blue-100 border-gray-300"
-                    } 
-                    ${isSubmitted ? "opacity-70 cursor-not-allowed" : ""}`}
-                >
-               <Latex>{option}</Latex>
-                </button>
-              ))}
+              {q.options.map((option: string) => {
+                let baseClass = "p-3 rounded-lg border text-left transition-all ";
+                
+                if (isSubmitted) {
+                  if (option === q.correct) baseClass += "bg-green-500 text-white border-green-600";
+                  else if (answers[q.id] === option) baseClass += "bg-red-500 text-white border-red-600";
+                  else baseClass += "bg-gray-100 border-gray-300 opacity-70 cursor-not-allowed";
+                } else {
+                  baseClass += answers[q.id] === option
+                    ? "bg-blue-500 text-white border-blue-500"
+                    : "bg-gray-100 hover:bg-blue-100 border-gray-300";
+                }
+
+                return (
+                  <button
+                    key={option}
+                    onClick={() => handleSelect(q.id, option)}
+                    disabled={isSubmitted}
+                    className={baseClass}
+                  >
+                    <Latex>{option}</Latex>
+                  </button>
+                );
+              })}
             </div>
           </div>
         ))}

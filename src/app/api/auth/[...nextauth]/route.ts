@@ -1,31 +1,48 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-// Example: You can use GoogleProvider or GitHubProvider instead if you want OAuth
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 const handler = NextAuth({
   providers: [
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
+        email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        // Example: Replace this with your real DB lookup
-        if (
-          credentials?.email === "test@example.com" &&
-          credentials?.password === "1234"
-        ) {
-          return { id: "1", name: "Test User", email: "test@example.com" };
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Missing email or password");
         }
-        return null;
+
+        // Find student in DB
+        const user = await prisma.student.findUnique({
+          where: { email: credentials.email },
+        });
+
+        if (!user) throw new Error("No user found");
+
+        // Plain-text comparison (not secure)
+        if (user.password !== credentials.password) {
+          throw new Error("Invalid password");
+        }
+
+        return { id: user.id, email: user.email };
       },
     }),
   ],
+
   pages: {
-    signIn: "/auth/signin", // Optional custom sign-in page
+    signIn: "/", // redirect to your main page
   },
-  secret: process.env.AUTH_SECRET, // Add this to your .env.local
+
+  session: {
+    strategy: "jwt",
+  },
+
+  secret: process.env.NEXTAUTH_SECRET,
 });
 
 export { handler as GET, handler as POST };
