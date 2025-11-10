@@ -1,22 +1,24 @@
 import gql from "graphql-tag";
 
 export const CREATE_STUDENT = gql`
-  mutation CreateStudent($password: String!, $email: String!) {
-    createStudent(password: $password, email: $email) {
-        id
-        email
-        password
+  mutation CreateStudent($email: String!, $password: String!, $idNumber: String!, $score: Int) {
+    createStudent(email: $email, password: $password, idNumber: $idNumber, score: $score) {
+      id
+      email
+      password
+      idNumber
+      score
     }
-    }
+  }
 `;
 
 export const CREATE_QUESTION = gql`
-  mutation CreateStudent($question: String!, $options: [String!]!,$correct: String!) {
-    createStudent(question: $question, options: $options, correct: $correct ) {
-        id
-        options
-        question
-        correct
+  mutation CreateQuestion($question: String!, $options: [String!]!, $correct: String!) {
+    createQuestion(question: $question, options: $options, correct: $correct) {
+      id
+      question
+      options
+      correct
     }
-    }
+  }
 `;

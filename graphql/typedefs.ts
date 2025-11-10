@@ -3,6 +3,8 @@ export const typeDefs = `#graphql
     id: ID!
     password: String!
     email: String!
+    idNumber: String!
+    score: Int
   }
 
   type Question {
@@ -18,7 +20,7 @@ export const typeDefs = `#graphql
   }
 
   type Mutation {
-    createStudent(password: String!, email: String!): Student!
+    createStudent(password: String!, email: String!, idNumber: Int!, score: Int): Student!
     createQuestion(question: String!, options: [String!]!, correct: String!): Question!
   }
 `;

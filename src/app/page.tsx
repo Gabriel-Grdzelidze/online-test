@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { useMutation } from "@apollo/client/react";
 import { CREATE_STUDENT } from "../../graphql/mutations";
 import { useState } from "react";
@@ -9,23 +9,22 @@ import { useSession } from "next-auth/react";
 export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [idNumber, setIdNumber] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
   const [showSignin, setShowSignin] = useState(false);
   const { data: session, status } = useSession();
-  console.log(session)
-
+console.log(session)
   const [createStudent, { loading, error }] = useMutation(CREATE_STUDENT);
-
 
   const StartTestHandler = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    if (!email || !password) {
-      alert("Please enter both fields");
+    if (!email || !password || !idNumber) {
+      alert("Please enter all fields");
       return;
     }
     createStudent({
-      variables: { email, password },
+      variables: { email, password, idNumber },
     })
       .then((res) => {
         console.log("Student created:", res.data);
@@ -34,13 +33,17 @@ export default function Home() {
       .catch((err) => console.error(err));
   };
 
-  // Sign In handler (NextAuth)
   const SignInHandler = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
+    if (!email || !password || !idNumber) {
+      alert("Please enter all fields");
+      return;
+    }
     const res = await signIn("credentials", {
       redirect: false,
       email,
       password,
+      idNumber,
     });
     if (res?.error) {
       alert(res.error);
@@ -51,7 +54,6 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#f0f0f0] relative">
-      {/* Top-right corner */}
       <div className="absolute top-6 right-8 space-x-3">
         <button
           onClick={() => setShowSignin(true)}
@@ -74,7 +76,6 @@ export default function Home() {
         </button>
       </div>
 
-      {/* Center Start Test button */}
       <div className="bg-white p-8 rounded-md shadow-lg shadow-black/35 w-[320px] text-center">
         <h1 className="text-lg font-bold mb-4">Start the Test</h1>
         <button
@@ -92,12 +93,20 @@ export default function Home() {
         </button>
       </div>
 
-      {/* Sign Up modal */}
       {showSignup && (
         <div className="fixed inset-0 bg-[#f0f0f0] flex items-center justify-center">
           <div className="bg-white rounded-xl p-6 shadow-lg w-80">
             <h2 className="text-xl font-bold mb-4 text-center">Create Account</h2>
             <form onSubmit={StartTestHandler}>
+              <div className="mb-2">
+                <label className="block text-sm font-medium">ID Number</label>
+                <input
+                  onChange={(e) => setIdNumber(e.target.value)}
+                  value={idNumber}
+                  type="text"
+                  className="border p-2 w-full rounded-md focus:border-blue-500 outline-none transition"
+                />
+              </div>
               <div className="mb-2">
                 <label className="block text-sm font-medium">Email</label>
                 <input
@@ -146,12 +155,20 @@ export default function Home() {
         </div>
       )}
 
-      {/* Sign In modal */}
       {showSignin && (
         <div className="fixed inset-0 bg-[#f0f0f0] flex items-center justify-center">
           <div className="bg-white rounded-xl p-6 shadow-lg w-80">
             <h2 className="text-xl font-bold mb-4 text-center">Sign In</h2>
             <form onSubmit={SignInHandler}>
+              <div className="mb-2">
+                <label className="block text-sm font-medium">ID Number</label>
+                <input
+                  value={idNumber}
+                  onChange={(e) => setIdNumber(e.target.value)}
+                  type="text"
+                  className="border p-2 w-full rounded-md focus:border-blue-500 outline-none transition"
+                />
+              </div>
               <div className="mb-2">
                 <label className="block text-sm font-medium">Email</label>
                 <input

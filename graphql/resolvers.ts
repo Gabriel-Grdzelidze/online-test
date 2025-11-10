@@ -9,18 +9,33 @@ export const resolvers = {
       return context.prisma.question.findMany();
     },
   },
+
   Mutation: {
-    createStudent: async (_parent: any, args: { password: string; email: string }, context: Context) => {
-      const { password, email } = args;
-      return context.prisma.student.create({ data: { password, email } });
+    createStudent: async (
+      _parent: any,
+      args: { password: string; email: string; idNumber: string; score?: number },
+      context: Context
+    ) => {
+      const { password, email, idNumber, score } = args;
+      return context.prisma.student.create({
+        data: {
+          password,
+          email,
+          idNumber,
+          score: score ?? null, 
+        },
+      });
     },
+
     createQuestion: async (
       _parent: any,
       args: { question: string; options: string[]; correct: string },
       context: Context
     ) => {
       const { question, options, correct } = args;
-      return context.prisma.question.create({ data: { question, options, correct } });
+      return context.prisma.question.create({
+        data: { question, options, correct },
+      });
     },
   },
 };

@@ -6,6 +6,8 @@ export const GET_STUDENTS = gql`
     id
     email
     password
+    idNumber
+    score
     }
   }
 `;

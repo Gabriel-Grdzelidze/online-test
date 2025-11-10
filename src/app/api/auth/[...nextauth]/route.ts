@@ -1,3 +1,5 @@
+"use server";
+
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaClient } from "@prisma/client";
@@ -17,14 +19,11 @@ const handler = NextAuth({
           throw new Error("Missing email or password");
         }
 
-        // Find student in DB
         const user = await prisma.student.findUnique({
           where: { email: credentials.email },
         });
 
         if (!user) throw new Error("No user found");
-
-        // Plain-text comparison (not secure)
         if (user.password !== credentials.password) {
           throw new Error("Invalid password");
         }
@@ -35,13 +34,10 @@ const handler = NextAuth({
   ],
 
   pages: {
-    signIn: "/", // redirect to your main page
+    signIn: "/", 
   },
 
-  session: {
-    strategy: "jwt",
-  },
-
+  session: { strategy: "jwt" },
   secret: process.env.NEXTAUTH_SECRET,
 });
 
