@@ -13,7 +13,12 @@ export const resolvers = {
   Mutation: {
     createStudent: async (
       _parent: any,
-      args: { password: string; email: string; idNumber: string; score?: number },
+      args: {
+        password: string;
+        email: string;
+        idNumber: string;
+        score?: number;
+      },
       context: Context
     ) => {
       const { password, email, idNumber, score } = args;
@@ -22,7 +27,7 @@ export const resolvers = {
           password,
           email,
           idNumber,
-          score: score ?? null, 
+          score: score ?? null,
         },
       });
     },
@@ -35,6 +40,49 @@ export const resolvers = {
       const { question, options, correct } = args;
       return context.prisma.question.create({
         data: { question, options, correct },
+      });
+    },
+    setScore: async (
+      _parent: any,
+      args: { score: number; email: string },
+      context: Context
+    ) => {
+      const { score, email } = args;
+      return context.prisma.student.update({
+        where: { email },
+        data: { score },
+      });
+    },
+    changeQuestion: async (
+      _parent: any,
+      args: {
+        id: string;
+        question: string;
+        options: string[];
+        correct: string;
+      },
+      context: Context
+    ) => {
+      const { id, question, options, correct } = args;
+      return context.prisma.question.update({
+        where: { id },
+        data: {
+          question,
+          options,
+          correct,
+        },
+      });
+    },
+    deleteQuestion: async (
+      _parent: any,
+      args: {
+        id: string;
+      },
+      context: Context
+    ) => {
+      const { id } = args;
+      return context.prisma.question.delete({
+        where: { id },
       });
     },
   },

@@ -20,7 +20,10 @@ export const typeDefs = `#graphql
   }
 
   type Mutation {
-    createStudent(password: String!, email: String!, idNumber: Int!, score: Int): Student!
+    createStudent(password: String!, email: String!, idNumber: String!, score: Int): Student!
     createQuestion(question: String!, options: [String!]!, correct: String!): Question!
+    setScore(email: String!, score: Int!): Student!
+    changeQuestion(id: ID!, question: String!, options: [String!]!, correct: String!): Question!
+    deleteQuestion(id: ID!): Question!
   }
 `;

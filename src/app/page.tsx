@@ -3,7 +3,7 @@ import { useMutation } from "@apollo/client/react";
 import { CREATE_STUDENT } from "../../graphql/mutations";
 import { useState } from "react";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
-import { signIn } from "next-auth/react";
+import { signIn, signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 
 export default function Home() {
@@ -14,26 +14,37 @@ export default function Home() {
   const [showSignup, setShowSignup] = useState(false);
   const [showSignin, setShowSignin] = useState(false);
   const { data: session, status } = useSession();
-console.log(session)
   const [createStudent, { loading, error }] = useMutation(CREATE_STUDENT);
 
-  const StartTestHandler = (e: { preventDefault: () => void }) => {
+  const StartTestHandler = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password || !idNumber) {
       alert("Please enter all fields");
       return;
     }
-    createStudent({
-      variables: { email, password, idNumber },
-    })
-      .then((res) => {
-        console.log("Student created:", res.data);
-        window.location.href = "/test";
-      })
-      .catch((err) => console.error(err));
+    try {
+      const res = await createStudent({
+        variables: { email, password, idNumber },
+      });
+      if (res.data) {
+        const login = await signIn("credentials", {
+          redirect: false,
+          email,
+          password,
+          idNumber,
+        });
+        if (!login?.error) {
+          window.location.href = "/test";
+        } else {
+          alert(login.error);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const SignInHandler = async (e: { preventDefault: () => void }) => {
+  const SignInHandler = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password || !idNumber) {
       alert("Please enter all fields");
@@ -47,6 +58,8 @@ console.log(session)
     });
     if (res?.error) {
       alert(res.error);
+    } else if (email === "grdzelidzegabriel@gmail.com") {
+      window.location.href = "/admin";
     } else {
       window.location.href = "/test";
     }
@@ -63,6 +76,7 @@ console.log(session)
         </button>
         <button
           onClick={() => {
+            signOut();
             if (status === "loading") return;
             if (session) {
               window.location.href = "/test";
@@ -204,13 +218,25 @@ console.log(session)
               >
                 Sign In
               </button>
+
+              <div className="mt-3 flex justify-between gap-2">
+                <button
+                  onClick={() => setShowSignin(false)}
+                  className="flex-1 text-gray-500 hover:underline text-sm rounded-lg border border-gray-300 py-2"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    setShowSignin(false);
+                    setShowSignup(true);
+                  }}
+                  className="flex-1 text-gray-500 hover:underline text-sm rounded-lg border border-gray-300 py-2"
+                >
+                  Sign Up
+                </button>
+              </div>
             </form>
-            <button
-              onClick={() => setShowSignin(false)}
-              className="mt-3 w-full text-gray-500 hover:underline text-sm"
-            >
-              Cancel
-            </button>
           </div>
         </div>
       )}

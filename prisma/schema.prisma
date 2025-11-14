@@ -7,13 +7,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Student{
-  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+model Student {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   email     String   @unique
   password  String
-  idNumber String @unique  
-  scode Int
+  idNumber  String   @unique  
+  score     Int?
 }
+
 
 model Question{
   id       String   @id @default(auto()) @map("_id") @db.ObjectId

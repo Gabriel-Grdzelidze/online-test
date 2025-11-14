@@ -1,10 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useQuery } from "@apollo/client/react";
+import { useQuery, useMutation } from "@apollo/client/react";
 import { useRouter } from "next/navigation";
 import Latex from "react-latex";
 import "katex/dist/katex.min.css";
 import { GET_QUESTIONS } from "../../../graphql/query";
+import { SET_SCORE } from "../../../graphql/mutations";
 import { useSession } from "next-auth/react";
 
 export default function TestPage() {
@@ -15,6 +16,7 @@ export default function TestPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [setScoreMutation] = useMutation(SET_SCORE);
   const questions = data?.question || [];
 
   useEffect(() => {
@@ -79,7 +81,7 @@ export default function TestPage() {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (isSubmitted) return;
     let points = 0;
     questions.forEach((q: any) => {
@@ -87,6 +89,19 @@ export default function TestPage() {
     });
     setScore(points);
     setIsSubmitted(true);
+
+    if (session?.user?.email) {
+      try {
+        await setScoreMutation({
+          variables: {
+            email: session.user.email,
+            score: points,
+          },
+        });
+      } catch (err) {
+        console.error("Failed to save score:", err);
+      }
+    }
   };
 
   if (loading) return <p className="text-center mt-10">Loading questions...</p>;
@@ -94,6 +109,8 @@ export default function TestPage() {
     return (
       <p className="text-center mt-10 text-red-600">Error loading questions.</p>
     );
+
+  
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center p-6">
