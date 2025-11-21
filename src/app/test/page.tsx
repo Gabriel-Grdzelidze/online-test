@@ -8,6 +8,8 @@ import { GET_QUESTIONS } from "../../../graphql/query";
 import { SET_SCORE } from "../../../graphql/mutations";
 import { useSession } from "next-auth/react";
 
+
+
 export default function TestPage() {
   const { data, loading, error } = useQuery(GET_QUESTIONS);
   const [answers, setAnswers] = useState({});

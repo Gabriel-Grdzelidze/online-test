@@ -5,7 +5,8 @@ import { useState } from "react";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { signIn, signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
-
+import "katex/dist/katex.min.css";
+import Latex from "react-latex";
 export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -105,6 +106,9 @@ export default function Home() {
         >
           Start Test
         </button>
+      </div>
+      <div>
+        <Latex>{}</Latex>
       </div>
 
       {showSignup && (
